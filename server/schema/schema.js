@@ -4,13 +4,18 @@ const { GraphQLObjectType,
     GraphQLString,
     GraphQLSchema,
     GraphQLID,
-    GraphQLInt } = graphql;
+    GraphQLInt,
+    GraphQLList } = graphql;
 
 //-------dummy data------
 let dummyBooks = [
     { name: "Ender's game", genre: "Sci-Fi", id: "1", authorId: "1" },
-    { name: "Mort", genre: "Fantasy", id: "2", authorId: "2"},
-    { name: "The killing joke", genre: "Comic", id: "3", authorId: "3" }
+    { name: "Mort", genre: "Fantasy", id: "2", authorId: "2" },
+    { name: "The killing joke", genre: "Comic", id: "3", authorId: "3" },
+    { name: "The colour of magic", genre: "Fantasy", id: "4", authorId: "2" },
+    { name: "The light fantastic", genre: "Fantasy", id: "5", authorId: "2" },
+    { name: "Speaker for the dead", genre: "Sci-Fi", id: "6", authorId: "1" }
+
 ];
 
 let dummyAuthors = [
@@ -29,10 +34,10 @@ const BookType = new GraphQLObjectType({    //--> as the name tells us, it defin
         genre: { type: GraphQLString },
         author: {
             type: AuthorType,
-            resolve(parent, args){          //--> resolve() defines how the search will be done and how the data will be foudn
-                                            //it first argument, parent, is used when nested searchs; the second argument, args, when we use a direct query search
+            resolve(parent, args) {          //--> resolve() defines how the search will be done and how the data will be foudn
+                //it first argument, parent, is used when nested searchs; the second argument, args, when we use a direct query search
                 console.log(parent);
-                return _.find(dummyAuthors, {id: parent.authorId })
+                return _.find(dummyAuthors, { id: parent.authorId })
             }
         }
     })
@@ -43,7 +48,13 @@ const AuthorType = new GraphQLObjectType({
     fields: () => ({
         id: { type: GraphQLID },
         name: { type: GraphQLString },
-        age: { type: GraphQLInt }
+        age: { type: GraphQLInt },
+        booksList: {
+            type: new GraphQLList(BookType),        
+            resolve(parent, args) {
+                return _.filter(dummyBooks, { authorId: parent.id });
+            }
+        }
     })
 });
 
