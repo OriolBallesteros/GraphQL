@@ -41,6 +41,7 @@ const BookType = new GraphQLObjectType({    //--> as the name tells us, it defin
                 //it first argument, parent, is used when nested searchs; the second argument, args, when we use a direct query search
                 console.log(parent);
                 //return _.find(dummyAuthors, { id: parent.authorId })
+
             }
         }
     })
@@ -53,7 +54,7 @@ const AuthorType = new GraphQLObjectType({
         name: { type: GraphQLString },
         age: { type: GraphQLInt },
         booksList: {
-            type: new GraphQLList(BookType),        
+            type: new GraphQLList(BookType),
             resolve(parent, args) {
                 //return _.filter(dummyBooks, { authorId: parent.id });
             }
@@ -79,15 +80,15 @@ const RootQuery = new GraphQLObjectType({
                 //return _.find(dummyAuthors, { id: args.id });
             }
         },
-        books:{
+        books: {
             type: new GraphQLList(BookType),
-            resolve(parent, args){
+            resolve(parent, args) {
                 //return dummyBooks
             }
         },
         authors: {
             type: new GraphQLList(AuthorType),
-            resolve(parent, args){
+            resolve(parent, args) {
                 //return dummyAuthors
             }
         }
@@ -95,6 +96,39 @@ const RootQuery = new GraphQLObjectType({
 });
 
 
+
+const Mutation = new GraphQLObjectType({
+    name: 'Mutation',                           //--> we obviously can define methods to interact with the DDBB
+    fields: {                   
+        addAuthor: {                            //--> if we want to add an author
+            type: AuthorType,                   //--> what we create is a author
+            args: {                             //--> and we need to provide few args to complete it
+                name: { type: GraphQLString },
+                age: {type: GraphQLInt}
+            },
+            resolve(parent, args){
+                let author = new Author({       //--> the creation itself is of a mongoose.model
+                    name: args.name,            //--> that takes the arguments provided
+                    age: args.age
+                });
+
+                return author.save();                  //--> the incredible mongoose lets us access the DDBB as simple as this line
+            }
+        }
+    }
+});
+//ON GRAPHQL -- if we want to apply a mutation function we need to specify it on the call:
+/* Ex:
+mutation{
+  addAuthor(name: "Eric", age: 40){
+    name
+    age
+  }
+} 
+*/
+
+
 module.exports = new GraphQLSchema({
-    query: RootQuery
+    query: RootQuery,
+    mutation: Mutation
 });
