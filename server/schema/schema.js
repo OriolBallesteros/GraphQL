@@ -5,7 +5,8 @@ const { GraphQLObjectType,
     GraphQLSchema,
     GraphQLID,
     GraphQLInt,
-    GraphQLList } = graphql;
+    GraphQLList,
+    GraphQLNonNull } = graphql;
 
 const Book = require('./../models/book');
 const Author = require('./../models/author');
@@ -108,8 +109,8 @@ const Mutation = new GraphQLObjectType({
         addAuthor: {                            //--> if we want to add an author
             type: AuthorType,                   //--> what we create is a author
             args: {                             //--> and we need to provide few args to complete it
-                name: { type: GraphQLString },
-                age: { type: GraphQLInt }
+                name: { type: new GraphQLNonNull(GraphQLString) },
+                age: { type: new GraphQLNonNull(GraphQLInt) }
             },
             resolve(parent, args) {
                 let author = new Author({       //--> the creation itself is of a mongoose.model
@@ -123,9 +124,9 @@ const Mutation = new GraphQLObjectType({
         addBook: {
             type: BookType,
             args: {
-                name: { type: GraphQLString },
-                genre: { type: GraphQLString },
-                authorId: { type: GraphQLID }
+                name: { type: new GraphQLNonNull(GraphQLString) },
+                genre: { type: new GraphQLNonNull(GraphQLString) },
+                authorId: { type: new GraphQLNonNull(GraphQLID) }
             },
             resolve(parent, args) {
                 let book = new Book({
