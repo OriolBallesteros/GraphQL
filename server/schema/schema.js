@@ -41,6 +41,7 @@ const BookType = new GraphQLObjectType({    //--> as the name tells us, it defin
                 //it first argument, parent, is used when nested searchs; the second argument, args, when we use a direct query search
                 console.log(parent);
                 //return _.find(dummyAuthors, { id: parent.authorId })
+                return Author.findById(parent.authorId);
 
             }
         }
@@ -57,6 +58,7 @@ const AuthorType = new GraphQLObjectType({
             type: new GraphQLList(BookType),
             resolve(parent, args) {
                 //return _.filter(dummyBooks, { authorId: parent.id });
+                return Book.find({ authorId: parent.id });
             }
         }
     })
@@ -70,7 +72,7 @@ const RootQuery = new GraphQLObjectType({
             args: { id: { type: GraphQLID } },   //as the name tells us, it defines the argument on the ==> search book(id: '23')
             resolve(parent, args) {                 //--> code to get the data, here is where the HOW is set //--> resolve() defines how the search will be done and how the data will be foudn. it first argument, parent, is used when nested searchs; the second argument, args, when we use a direct query search
                 //return _.find(dummyBooks, { id: args.id });
-
+                return Book.findById(args.id);
             }
         },
         author: {
@@ -78,18 +80,21 @@ const RootQuery = new GraphQLObjectType({
             args: { id: { type: GraphQLID } },
             resolve(parent, args) {
                 //return _.find(dummyAuthors, { id: args.id });
+                return Author.findById(args.id);
             }
         },
         books: {
             type: new GraphQLList(BookType),
             resolve(parent, args) {
                 //return dummyBooks
+                return Book.find({});
             }
         },
         authors: {
             type: new GraphQLList(AuthorType),
             resolve(parent, args) {
                 //return dummyAuthors
+                return Author.find({});
             }
         }
     }
@@ -99,14 +104,14 @@ const RootQuery = new GraphQLObjectType({
 
 const Mutation = new GraphQLObjectType({
     name: 'Mutation',                           //--> we obviously can define methods to interact with the DDBB
-    fields: {                   
+    fields: {
         addAuthor: {                            //--> if we want to add an author
             type: AuthorType,                   //--> what we create is a author
             args: {                             //--> and we need to provide few args to complete it
                 name: { type: GraphQLString },
-                age: {type: GraphQLInt}
+                age: { type: GraphQLInt }
             },
-            resolve(parent, args){
+            resolve(parent, args) {
                 let author = new Author({       //--> the creation itself is of a mongoose.model
                     name: args.name,            //--> that takes the arguments provided
                     age: args.age
@@ -118,11 +123,11 @@ const Mutation = new GraphQLObjectType({
         addBook: {
             type: BookType,
             args: {
-                name:  {type: GraphQLString},
-                genre: {type: GraphQLString},
-                authorId: {type: GraphQLID}
+                name: { type: GraphQLString },
+                genre: { type: GraphQLString },
+                authorId: { type: GraphQLID }
             },
-            resolve(parent, args){
+            resolve(parent, args) {
                 let book = new Book({
                     name: args.name,
                     genre: args.genre,
