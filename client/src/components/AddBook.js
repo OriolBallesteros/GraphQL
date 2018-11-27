@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
 import { graphql, compose } from 'react-apollo';     //--> Used on the export! Allows to use the data from graphql query on the component. 
 
-import { getAuthorsQuery, addBookMutation} from './../queries/queries';
+import { getAuthorsQuery, addBookMutation, getBooksQuery} from './../queries/queries';
 /* //query from React front-end
 const getAuthorsQuery = gql`                
   {
@@ -48,7 +48,8 @@ class AddBook extends Component {
                 name: this.state.name,
                 genre: this.state.genre,
                 authorId: this.state.authorId
-            }
+            },
+            refetchQueries: [{ query: getBooksQuery }]
         });
     }
 
