@@ -1,7 +1,7 @@
 import React, { Component } from 'react';
-import { graphql } from 'react-apollo';     //--> Used on the export! Allows to use the data from graphql query on the component. 
+import { graphql, compose } from 'react-apollo';     //--> Used on the export! Allows to use the data from graphql query on the component. 
 
-import { getAuthorsQuery } from './../queries/queries';
+import { getAuthorsQuery, addBookMutation} from './../queries/queries';
 /* //query from React front-end
 const getAuthorsQuery = gql`                
   {
@@ -15,8 +15,19 @@ const getAuthorsQuery = gql`
 
 class AddBook extends Component {
 
+    constructor(props) {
+        super(props);
+        this.state = {
+            name: "",
+            genre: "",
+            authorId: ""
+        };
+    }
+
     displayAuthors() {
-        let data = this.props.data;
+        //let data = this.props.data; --> ONCE we use compose to use more than 1 query in a component, the structure of this.props changes and this.props.data do not longer exist
+        console.log(this.props);
+        let data = this.props.getAuthorsQuery;
         if (data.loading) {
             return (<option disabled>Loading authors...</option>);
 
@@ -29,23 +40,35 @@ class AddBook extends Component {
         }
     }
 
+    submitForm(e){
+        e.preventDefault();
+        //console.log(this.state);
+        this.props.addBookMutation({        //--> working with the query variables in queries line 23
+            variables: {
+                name: this.state.name,
+                genre: this.state.genre,
+                authorId: this.state.authorId
+            }
+        });
+    }
+
     render() {
-        console.log('addbook.js - this.props = ', this.props);
+        //console.log('addbook.js - this.props = ', this.props);
         return (
-            <form id='add-book'>
+            <form id='add-book' onSubmit={this.submitForm.bind(this)}>
                 <div className='field'>
                     <label>Book name:</label>
-                    <input type='text' />
+                    <input type='text' onChange={(e) => this.setState({ name: e.target.value })} />
                 </div>
 
                 <div className='field'>
                     <label>Genre:</label>
-                    <input type='text' />
+                    <input type='text' onChange={(e) => this.setState({ genre: e.target.value })}/>
                 </div>
 
                 <div className='field'>
                     <label>Author:</label>
-                    <select>
+                    <select onChange={(e) => this.setState({ authorId: e.target.value })}>
                         <option>Select author</option>
                         {this.displayAuthors()}
                     </select>
@@ -57,4 +80,7 @@ class AddBook extends Component {
     }
 }
 
-export default graphql(getAuthorsQuery)(AddBook);
+export default compose(
+    graphql(getAuthorsQuery, {name: "getAuthorsQuery"}),
+    graphql(addBookMutation, {name: "addBookMutation"})
+)(AddBook);

@@ -1,6 +1,6 @@
 import { gql } from 'apollo-boost';         //--> allows to create the query
 
-//query from React front-end
+//queries from React front-end
 const getBooksQuery = gql`                
   {
     books{
@@ -10,7 +10,6 @@ const getBooksQuery = gql`
   }
 `
 
-//query from React front-end
 const getAuthorsQuery = gql`                
   {
     authors{
@@ -20,7 +19,27 @@ const getAuthorsQuery = gql`
   }
 `
 
+//using query variables
+const addBookMutation = gql`
+mutation($name:String!, $genre:String!, $authorId:ID!){   
+  addBook(name: $name, genre: $genre, authorId: $authorId){
+    name
+    id
+  }
+}
+`
+/* while building addBookMutation:
+const addBookMutation = gql`
+mutation{
+  addBook(name: "", genre: "", authorId: ""){
+    name
+    id
+  }
+}
+` */
+
 export {
-    getAuthorsQuery,
-    getBooksQuery
+  getAuthorsQuery,
+  getBooksQuery,
+  addBookMutation
 }
