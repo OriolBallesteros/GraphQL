@@ -26,7 +26,7 @@ class AddBook extends Component {
 
     displayAuthors() {
         //let data = this.props.data; --> ONCE we use compose to use more than 1 query in a component, the structure of this.props changes and this.props.data do not longer exist
-        console.log(this.props);
+        //console.log(this.props);
         let data = this.props.getAuthorsQuery;
         if (data.loading) {
             return (<option disabled>Loading authors...</option>);
@@ -49,7 +49,7 @@ class AddBook extends Component {
                 genre: this.state.genre,
                 authorId: this.state.authorId
             },
-            refetchQueries: [{ query: getBooksQuery }]
+            refetchQueries: [{ query: getBooksQuery }]  //--> as simple as that we can re-call a query after another
         });
     }
 
