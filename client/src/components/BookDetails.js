@@ -24,7 +24,7 @@ class BookDetails extends Component {
             )
         }else{
             return (
-                <div>No books selected</div>
+                <div>No books selected...</div>
             )
         }
     }
